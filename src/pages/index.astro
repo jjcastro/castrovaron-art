@@ -1,49 +1,49 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import { Image } from "astro:assets";
+import image1 from "../bundled-images/IMG_1506.JPG";
+import image2 from "../bundled-images/IMG_1507.JPG";
+import image3 from "../bundled-images/IMG_1508.JPG";
+import image4 from "../bundled-images/IMG_1509.JPG";
+import image5 from "../bundled-images/IMG_1510.JPG";
+import image6 from "../bundled-images/IMG_1511.JPG";
+import image7 from "../bundled-images/IMG_1512.JPG";
+import image8 from "../bundled-images/IMG_1513.JPG";
+import image9 from "../bundled-images/IMG_1514.JPG";
+import image10 from "../bundled-images/IMG_1515.JPG";
+import image11 from "../bundled-images/IMG_1516.JPG";
+import image12 from "../bundled-images/IMG_1517.JPG";
+import image13 from "../bundled-images/IMG_1518.JPG";
+import image14 from "../bundled-images/IMG_1519.JPG";
+import image15 from "../bundled-images/IMG_1520.JPG";
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body class="plantin-font">
+    <Header />
+    <main>
+      <!-- <h1>🧑‍🚀 Hello, Astronaut!</h1> -->
+      <Image src={image1} alt="A description of my image." />
+      <span
+        >Walnut sapwood and bark, sterling silver, leather cord, wax. (2025)</span
+      >
+      <Image src={image6} alt="A description of my image." />
+      <span>Iron ebonized oak, leather cord, sterling silver, wax. (2025)</span>
+      <Image src={image8} alt="A description of my image." />
+      <span>Walnut wood, leather cord, sterling & fine silver, wax. (2025)</span
+      >
+      <Image src={image15} alt="A description of my image." />
+      <span
+        >Walnut bark, epoxy resin, leather cord, sterling silver, wax. (2025)</span
+      >
+    </main>
+    <Footer />
+  </body>
 </html>
