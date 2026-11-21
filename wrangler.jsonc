@@ -1,0 +1,11 @@
+// Cloudflare Workers config: serves the built static site from ./dist.
+// Cloudflare runs `pnpm run build`, then `npx wrangler deploy`.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "castrovaron-art",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}
