@@ -1,19 +1,47 @@
 ---
 import HeaderLink from "./HeaderLink.astro";
+import LangPicker from "./LangPicker.astro";
 import { SITE_TITLE } from "../consts";
+import { localeFromPath, ui } from "../i18n";
+
+const { code, prefix } = localeFromPath(Astro.url.pathname);
 ---
 
-<header class="fixed m-0 px-4 tgbe-font">
+<!-- Mobile: a slim bar that sticks to the top while scrolling.
+     Desktop: fixed sidebar on the left. -->
+<header
+  class="sticky top-0 z-30 px-4 tgbe-font bg-white/95 backdrop-blur-sm md:fixed md:bg-transparent md:backdrop-blur-none"
+>
   <nav class="flex flex-col">
-    <h2 class="m-0 text-base flex py-8 px-4 text-[1.25rem]!">
-      <a href="/" class="no-underline text-[1.25rem]">{SITE_TITLE}</a>
-    </h2>
+    <div class="flex justify-between items-baseline gap-3 pt-4 pb-1 md:pt-8 md:pb-8 md:px-4">
+      <h2 class="m-0 text-[1rem]! md:text-[1.25rem]! whitespace-nowrap">
+        <a href={`${prefix}/`} class="no-underline">{SITE_TITLE}</a>
+      </h2>
+      <LangPicker others class="md:hidden text-[0.8rem] gap-4! text-gray-500" />
+    </div>
 
-    <div class="flex justify-between absolute top-30">
-      <div class="flex flex-col px-4 text-[1rem]">
-        <HeaderLink href="/">home</HeaderLink>
-        <HeaderLink href="/blog">blog</HeaderLink>
-        <HeaderLink href="/about">about</HeaderLink>
+    <div class="pb-3 md:pb-0 md:absolute md:top-30">
+      <div class="flex md:flex-col gap-4 md:gap-0 md:px-4 text-[0.85rem] md:text-[1rem] whitespace-nowrap">
+        <HeaderLink href={`${prefix}/work/`}>{ui[code].work}</HeaderLink>
+        <HeaderLink href={`${prefix}/about/`}>{ui[code].about}</HeaderLink>
+        <a
+          href={code === "kr" ? "https://kr.minilith.co/" : "https://minilith.co.uk/"}
+          target="_blank"
+          rel="noopener"
+          class="text-black no-underline hover:underline md:mt-4 inline-flex items-baseline gap-1"
+        >
+          minilith
+          <!-- Drawn arrow: the ↗ character shows as an emoji on phones -->
+          <svg
+            viewBox="0 0 10 10"
+            class="w-[0.6em] h-[0.6em] self-center"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            aria-hidden="true"><path d="M2 8 8 2M3.5 2H8v4.5"></path></svg
+          >
+          <span class="sr-only">(opens in a new tab)</span>
+        </a>
       </div>
     </div>
   </nav>

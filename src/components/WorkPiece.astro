@@ -1,0 +1,97 @@
+---
+import { Image, getImage } from "astro:assets";
+import Page from "../layouts/Page.astro";
+import { projects, photo, type Photo } from "../data/works";
+import { localWorkBySlug, localProjectFor } from "../data/localize";
+import { localeFromPath, ui } from "../i18n";
+
+interface Props {
+  slug: string;
+}
+
+const { code, prefix } = localeFromPath(Astro.url.pathname);
+const t = ui[code];
+// "Next" follows the order of the Work page (project by project).
+const ordered = projects.flatMap((p) => p.works);
+const work = localWorkBySlug(Astro.props.slug, code);
+const next = localWorkBySlug(ordered[(ordered.indexOf(work.slug) + 1) % ordered.length], code);
+const project = localProjectFor(work.slug, code);
+const [first, ...rest] = work.photos.filter((p) => !p.show || p.show.includes("page"));
+const cover = await getImage({
+  src: photo(work.slug, first.name),
+  width: 1200,
+  format: "jpg",
+});
+---
+
+<Page title={work.title} description={work.summary} image={cover.src}>
+  <h1 class="tgbe-font text-[1.25rem]! mb-1!">{work.title}</h1>
+  <p class="text-gray-500 mt-0">{work.year}</p>
+
+  {
+    [first].map((p: Photo) => (
+      <figure class="m-0 mb-10">
+        <Image
+          src={photo(work.slug, p.name)}
+          alt={p.alt}
+          widths={[480, 760, 1200, 1520]}
+          sizes="(min-width: 800px) 760px, 100vw"
+          class="block w-auto h-auto max-w-full max-h-[70vh]"
+          loading="eager"
+        />
+        {p.caption && (
+          <figcaption class="mt-2 text-[0.85rem] text-gray-600 leading-snug">
+            {p.caption}
+          </figcaption>
+        )}
+      </figure>
+    ))
+  }
+
+  {work.text.map((t) => <p set:html={t} />)}
+
+  <div class="mt-8 mb-14">
+    {
+      work.pieces.map((piece) => (
+        <p class="text-[0.9rem] leading-snug">
+          <span class="tgbe-font text-[0.75rem]">{piece.title}</span>
+          {piece.lines.map((l) => (
+            <>
+              <br />
+              {l}
+            </>
+          ))}
+        </p>
+      ))
+    }
+  </div>
+
+  {
+    rest.map((p) => (
+      <figure class="m-0 mb-12">
+        <Image
+          src={photo(work.slug, p.name)}
+          alt={p.alt}
+          widths={[480, 760, 1200, 1520]}
+          sizes="(min-width: 800px) 760px, 100vw"
+          class="block w-auto h-auto max-w-full max-h-[70vh]"
+        />
+        {p.caption && (
+          <figcaption class="mt-2 text-[0.85rem] text-gray-600 leading-snug">
+            {p.caption}
+          </figcaption>
+        )}
+      </figure>
+    ))
+  }
+
+  <hr />
+  <p class="text-[0.9rem] flex justify-between gap-4">
+    <a href={project ? `${prefix}/work/#${project.slug}` : `${prefix}/work/`} class="underline">
+      ← {project ? project.title : t.allWork}
+    </a>
+    <a href={`${prefix}/work/${next.slug}/`} class="underline text-right">
+      {t.next}: {next.title} →
+    </a>
+  </p>
+</Page>

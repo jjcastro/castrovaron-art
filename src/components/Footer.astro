@@ -1,18 +1,15 @@
 ---
+import LangPicker from "./LangPicker.astro";
+
 const today = new Date();
 ---
 
 <footer
-  class="text-[1rem] fixed bottom-0 left-0 py-8 px-8 w-[100vw] flex justify-between"
+  class="text-[1rem] md:fixed bottom-0 left-0 py-8 px-4 md:px-8 w-full md:w-[21rem] flex md:flex-col justify-between gap-8 md:gap-1"
 >
-  <div class="flex space-x-4 tgbe-font">
-    <a href="#">ESP</a>
-    <a href="#">FRA</a>
-    <a href="#">한국어</a>
-    <a href="#">MAG</a>
-  </div>
+  <!-- On mobile the languages live in the sticky top bar instead -->
+  <LangPicker class="hidden md:flex" />
   <div class="plantin-font">
     &copy; {today.getFullYear()}
   </div>
 </footer>
-<style></style>

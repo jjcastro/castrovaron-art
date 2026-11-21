@@ -1,0 +1,97 @@
+---
+import { Image } from "astro:assets";
+import Page from "../layouts/Page.astro";
+import { photo } from "../data/works";
+import { localProjects, localWorkBySlug } from "../data/localize";
+import { localeFromPath, ui } from "../i18n";
+
+const { code, prefix } = localeFromPath(Astro.url.pathname);
+
+// For each project: its works, the photos to show in its row (reference
+// photos by other people stay on the piece pages only), and its description.
+const sections = localProjects(code).map((project) => {
+  const projectWorks = project.works.map((slug) => localWorkBySlug(slug, code));
+  const photos = projectWorks.flatMap((w) =>
+    w.photos
+      .filter((p) => !p.name.startsWith("ref-") && (!p.show || p.show.includes("row")))
+      .map((p) => ({ ...p, work: w, image: photo(w.slug, p.name) })),
+  );
+  const text =
+    project.text.length > 0
+      ? project.text
+      : projectWorks.length === 1
+        ? projectWorks[0].text
+        : [];
+  return { project, works: projectWorks, photos, text };
+});
+---
+
+<Page title={ui[code].workTitle} wide>
+  {
+    sections.map(({ project, works, photos, text }) => (
+      <section id={project.slug} class="mb-20 scroll-mt-28 md:scroll-mt-8">
+        <h2 class="tgbe-font text-[1rem]! mb-4!">{project.title}</h2>
+
+        <div class="relative -mr-4 md:-mr-8">
+        <div data-row class="flex gap-2 overflow-x-auto pr-4 md:pr-8 pb-2 snap-x">
+          {photos.map((p, i) => (
+            <a
+              href={`${prefix}/work/${p.work.slug}/`}
+              title={`${p.work.title} (${p.work.year})`}
+              class="shrink-0 snap-start hover:opacity-85 transition-opacity"
+            >
+              <Image
+                src={p.image}
+                alt={p.alt}
+                height={480}
+                densities={[1, 2]}
+                class="block h-[340px] md:h-[480px] w-auto max-w-none"
+                loading={i < 4 ? "eager" : "lazy"}
+              />
+            </a>
+          ))}
+        </div>
+          {/* White fade at the right edge: hints there's more to scroll, hides at the end */}
+          <div
+            data-fade
+            aria-hidden="true"
+            class="edge-fade pointer-events-none absolute top-0 bottom-2 right-0 w-10 md:w-14 transition-opacity duration-500"
+          />
+        </div>
+
+        <div class="max-w-[640px] mt-4">
+          {text.map((t) => (
+            <p set:html={t} />
+          ))}
+          <p class="text-[0.9rem]">
+            {works.map((w, i) => (
+              <>
+                {i > 0 && " · "}
+                <a href={`${prefix}/work/${w.slug}/`} class="underline">
+                  {w.title}
+                </a>{" "}
+                <span class="text-gray-500">({w.year})</span>
+              </>
+            ))}
+          </p>
+        </div>
+      </section>
+    ))
+  }
+</Page>
+
+<script>
+  // Show the edge fade only while there is more of the row to the right.
+  for (const row of document.querySelectorAll<HTMLElement>("[data-row]")) {
+    const fade = row.parentElement?.querySelector<HTMLElement>("[data-fade]");
+    if (!fade) continue;
+    const update = () => {
+      const atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - 4;
+      fade.style.opacity = atEnd ? "0" : "1";
+    };
+    row.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    row.querySelectorAll("img").forEach((img) => img.addEventListener("load", update));
+    update();
+  }
+</script>

@@ -16,12 +16,39 @@
   font-style: normal;
 }
 
+/* Trade Gothic has no Korean letters: use the system's bold Korean font,
+   scaled up so it sits evenly next to the wide Trade Gothic capitals. */
+@font-face {
+  font-family: 'tgbe-ko';
+  src: local('AppleSDGothicNeo-Bold'), local('Apple SD Gothic Neo Bold'),
+    local('NotoSansKR-Bold'), local('Noto Sans KR Bold'), local('Malgun Gothic Bold');
+  unicode-range: U+1100-11FF, U+3130-318F, U+AC00-D7AF;
+  size-adjust: 125%;
+}
+
 .tgbe-font {
-  font-family: "tgbe", sans-serif;
+  font-family: "tgbe", "tgbe-ko", sans-serif;
   letter-spacing: 0.02em;
   font-weight: bold;
   text-transform: uppercase;
 
+}
+
+/* Right edge of scrolling photo rows: pure white at the very edge, easing
+   smoothly into the photo, hinting there's more to see. (No blur: phones
+   apply it as a hard-edged strip.) */
+.edge-fade {
+  background: linear-gradient(
+    to left,
+    rgb(255 255 255 / 1) 0%,
+    rgb(255 255 255 / 0.74) 14%,
+    rgb(255 255 255 / 0.52) 28%,
+    rgb(255 255 255 / 0.33) 42%,
+    rgb(255 255 255 / 0.19) 56%,
+    rgb(255 255 255 / 0.09) 70%,
+    rgb(255 255 255 / 0.03) 85%,
+    rgb(255 255 255 / 0) 100%
+  );
 }
 
 .plantin-font {
@@ -52,12 +79,6 @@ body {
 	color: rgb(var(--gray-dark));
 	font-size: 20px;
 	line-height: 1.7;
-}
-
-main {
-	/* width: 720px; */
-	/* max-width: calc(100% - 2em); */
-	margin: auto;
 }
 
 h1,
@@ -146,9 +167,6 @@ hr {
 @media (max-width: 720px) {
 	body {
 		font-size: 18px;
-	}
-	main {
-		padding: 1em;
 	}
 }
 

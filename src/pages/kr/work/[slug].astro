@@ -1,0 +1,10 @@
+---
+import WorkPiece from "../../../components/WorkPiece.astro";
+import { projects } from "../../../data/works";
+
+export function getStaticPaths() {
+  return projects.flatMap((p) => p.works).map((slug) => ({ params: { slug } }));
+}
+---
+
+<WorkPiece slug={Astro.params.slug} />

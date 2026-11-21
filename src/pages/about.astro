@@ -1,18 +1,69 @@
 ---
-import Layout from "../layouts/BlogPost.astro";
+import Layout from "../layouts/Page.astro";
+import CV, { type CVSection } from "../components/CV.astro";
+import { ui } from "../i18n";
+
+const cv: CVSection[] = [
+  {
+    title: "Education & Residencies",
+    rows: [
+      ["2025-2026", "Resident @ Baseform (베이스폼), Seoul"],
+      ["2025-2026", "Baseform Jewellery Academy (베이스폼), Seoul"],
+      ["2024-2026", "K2 Academy of Contemporary Jewellery, London", "2 year course"],
+      ["2023-2026", "Under-30 Resident @ Somerset House's Makerversity, London"],
+      ["2022-2023", "Craft courses at Central Saint Martins & Others"],
+      ["2014-2018", "Universidad de los Andes, Bogotá, Colombia", "Computer Science* minor in Graphic Design"],
+    ],
+  },
+  {
+    title: "Work in Public Collections",
+    rows: [
+      ["2025", "British Museum"],
+      ["2025", "The Goldsmiths' Company"],
+      ["2025", "The Royal Mint Museum"],
+      ["2025", "American Numismatic Society, New York"],
+      ["2025", "British Art Medal Society"],
+      ["", "Old Speech Room Gallery, Harrow School"],
+    ],
+  },
+  {
+    title: "Awards",
+    rows: [
+      ["2026", "Goldsmiths' Craft & Design Awards - Bronze Award (Smallworkers)"],
+      ["2024", "Goldsmiths' Craft & Design Awards - Gold Award (Design)"],
+    ],
+  },
+  {
+    title: "Group Exhibitions",
+    rows: [
+      ["2025-2026", "Cockpit Open Studios, as part of K2 Academy, London"],
+      ["2024", "Sheffield, Goldsmiths North 12 - 14 July @ Sheffield's Cutlers' Hall"],
+      ["2024", "London Goldsmiths' Centre, Summer Exhibition 12 - 14 July"],
+      ["2024", "Birmingham Assay Office 12 - 14"],
+      ["2024", "London Goldsmiths' Hall March"],
+    ],
+  },
+  {
+    title: "Public speaking",
+    rows: [
+      ["2026", "British Art Medal Society Conference, Farnham"],
+      ["2025", "PechaKucha @ Makerversity, Somerset House, London"],
+      ["2024", "A city is not a museum: how London adapts and changes", "Open House Festival 2024 - 2 hour walking tour"],
+    ],
+  },
+  {
+    title: "Languages",
+    rows: [["", "Spanish (native), English, French, Korean"]],
+  },
+];
 ---
 
-<!-- heroImage="/blog-placeholder-about.jpg" -->
-<Layout
-  title="About Me"
-  description="Lorem ipsum dolor sit amet"
-  pubDate={new Date("August 08 2021")}
->
+<Layout title={ui.en.aboutTitle}>
   <p>
-    Hiya 👋🏼 I'm Juan. I'm an artist, designer and engineer* based out of London.
-    I'm currently living in Seoul (in 2025). I like making things. These days I
-    make jewellery and small objects, inspired by the built environment or
-    reflecting on the materials that surround us.
+    Hiya 👋🏼 I'm Juan. I'm an artist, designer and engineer* based out of London
+    (or Seoul, Korea 2025-2026). I like making things. These
+    days I make jewellery and small objects, inspired by the built environment
+    or reflecting on the materials that surround us.
   </p>
 
   <p>
@@ -24,122 +75,31 @@ import Layout from "../layouts/BlogPost.astro";
   </p>
 
   <p>
-    I'm based in Somerset House, central London's historic arts center.<br />You
+    I'm based in <a
+      href="https://www.somersethouse.org.uk/"
+      class="underline!">Somerset House</a
+    >, central London's historic arts center, or in Baseform (베이스폼) in
+    Seoul's Mapo district.<br />You
     can contact me at <span>
       juan<span
         class="inline-block relative before:content-['@'] before:absolute"
         ><span class="inline-block overflow-clip opacity-0 text-[0.65em]"
           >[at]</span
-        >castrovaron.com
-      </span>
-    </span>
+        >castrovaron.com</span
+      ></span
+    >
   </p>
 
-  <hr />
+  <hr class="my-8" />
 
-  <p>
-    <ul>
-      <li>Born 1997</li>
-      <li>Colombia</li>
-    </ul>
-  </p>
-  <p>
-    <h4 class="tgbe-font text-[1rem]!">Education & Residencies:</h4>
-    <ul>
-      <li>
-        <span class="w-[5.5em] inline-block">2023-2025</span> Under-30 Resident @
-        Somerset House, London
-      </li>
-      <li>
-        <span class="w-[5.5em] inline-block">2024-2025</span> K2 Academy of Contemporary
-        Jewellery, London
-      </li>
-      <li>
-        <span class="w-[5.5em] inline-block">2022-2023</span> Craft courses at Central
-        Saint Martins & Others
-      </li>
-      <li>
-        <span class="w-[5.5em] inline-block">2014-2018</span> Universidad de los
-        Andes, Bogotá, Colombia
-      </li>
-      <li>
-        <span class="w-[5.5em] inline-block"></span>
-        <span class="text-gray-400"
-          >Computer Science* minor in Graphic Design</span
-        >
-      </li>
-    </ul>
-  </p>
-  <p>
-    <h4 class="tgbe-font text-[1rem]!">Work in Public Collections:</h4>
-    <ul>
-      <li>
-        <span class="w-[5.5em] inline-block">2025</span> British Museum
-      </li>
-      <li>
-        <span class="w-[5.5em] inline-block">2025</span> British Art Medal Society
-      </li>
-      <li>
-        <span class="w-[5.5em] inline-block">2025</span> The Goldsmith's Company
-      </li>
-    </ul>
-  </p>
+  <CV born={["Born 1997", "Colombia"]} sections={cv} />
 
-  <p>
-    <h4 class="tgbe-font text-[1rem]!">Awards:</h4>
-    <ul>
-      <li>
-        <span class="w-[5.5em] inline-block">2024</span> Goldsmith's Craft & Design
-        Awards - Gold Award
-      </li>
-    </ul>
-  </p>
-  <p>
-    <h4 class="tgbe-font text-[1rem]!">Group Exhibitions:</h4>
-    <ul>
-      <li>
-        <span class="w-[5.5em] inline-block">2024</span> Sheffield, Goldsmiths North
-        12 - 14 July @ Sheffield's Cutler Hall
-      </li>
-      <li>
-        <span class="w-[5.5em] inline-block">2024</span> London Goldsmith's Centre
-        12 - 14 July
-      </li>
-      <li>
-        <span class="w-[5.5em] inline-block">2024</span> Birmingham Assay Office
-        12 - 14
-      </li>
-
-      <li>
-        <span class="w-[5.5em] inline-block">2024</span> London Goldsmith's Hall
-        March
-      </li>
-    </ul>
-  </p>
-  <p>
-    <h4 class="tgbe-font text-[1rem]!">Public speaking:</h4>
-    <ul>
-      <li>
-        <span class="w-[5.5em] inline-block">2024</span> A city is not a museum:
-        how London adapts and changes
-      </li>
-      <li>
-        <span class="w-[5.5em] inline-block"></span>
-        <span class="text-gray-400"
-          >Open House Festival 2024 - 2 hour walking tour
-        </span>
-      </li>
-    </ul>
-  </p>
-
-  <br />
-  <hr />
-  <br />
+  <hr class="my-10" />
   <p>
     * In a previous career, I did computer science and worked as a software
     engineer at Google from 2017 to 2023. In 2023, I decided to spend more time
     making and less time looking at a computer. You can find my old archived
-    website here (beware, it's quite outdated).
+    website <a href="https://castrovaron.pages.dev" class="underline!">here</a>
+    (beware, it's quite outdated).
   </p>
-  <div class="pb-30"></div>
 </Layout>

@@ -1,90 +1,104 @@
 ---
-import Layout from "../layouts/BlogPost.astro";
+import Layout from "../../layouts/Page.astro";
+import CV, { type CVSection } from "../../components/CV.astro";
+import { ui } from "../../i18n";
+
+const cv: CVSection[] = [
+  {
+    title: "Formación y residencias",
+    rows: [
+      ["2025-2026", "Residencia @ Baseform (베이스폼), Seúl"],
+      ["2025-2026", "Baseform Jewellery Academy (베이스폼), Seúl"],
+      ["2024-2026", "K2 Academy of Contemporary Jewellery, Londres", "Curso de 2 años"],
+      ["2023-2026", "Residencia Under-30 @ Makerversity, Somerset House, Londres"],
+      ["2022-2023", "Cursos de artesanía en Central Saint Martins y otros"],
+      ["2014-2018", "Universidad de los Andes, Bogotá, Colombia", "Ingeniería de Sistemas y Computación*, opción en Diseño Gráfico"],
+    ],
+  },
+  {
+    title: "Obra en colecciones públicas",
+    rows: [
+      ["2025", "British Museum"],
+      ["2025", "The Goldsmiths' Company"],
+      ["2025", "The Royal Mint Museum"],
+      ["2025", "American Numismatic Society, Nueva York"],
+      ["2025", "British Art Medal Society"],
+      ["", "Old Speech Room Gallery, Harrow School"],
+    ],
+  },
+  {
+    title: "Premios",
+    rows: [
+      ["2026", "Goldsmiths' Craft & Design Awards - Premio de Bronce (Smallworkers)"],
+      ["2024", "Goldsmiths' Craft & Design Awards - Premio de Oro (Diseño)"],
+    ],
+  },
+  {
+    title: "Exposiciones colectivas",
+    rows: [
+      ["2025-2026", "Cockpit Open Studios, como parte de K2 Academy, Londres"],
+      ["2024", "Sheffield, Goldsmiths North 12 - 14 de julio @ Cutlers' Hall de Sheffield"],
+      ["2024", "Goldsmiths' Centre de Londres, exposición de verano 12 - 14 de julio"],
+      ["2024", "Birmingham Assay Office 12 - 14"],
+      ["2024", "Goldsmiths' Hall de Londres, marzo"],
+    ],
+  },
+  {
+    title: "Charlas",
+    rows: [
+      ["2026", "Conferencia de la British Art Medal Society, Farnham"],
+      ["2025", "PechaKucha @ Makerversity, Somerset House, Londres"],
+      ["2024", "Una ciudad no es un museo: cómo Londres se adapta y cambia", "Open House Festival 2024 - recorrido a pie de 2 horas"],
+    ],
+  },
+  {
+    title: "Idiomas",
+    rows: [["", "Español (nativo), inglés, francés, coreano"]],
+  },
+];
 ---
 
-<!-- heroImage="/blog-placeholder-about.jpg" -->
-<Layout
-  title="About Me"
-  description="Lorem ipsum dolor sit amet"
-  pubDate={new Date("August 08 2021")}
->
+<Layout title={ui.es.aboutTitle}>
   <p>
-    Hiya, I'm Juan. I'm a jewellery artist, designer and engineer based out of
-    London, currently living in Seoul. You can contact me at <span>
+    Hola 👋🏼 Soy Juan. Soy artista, diseñador e ingeniero* basado en Londres
+    (o en Seúl, Corea, 2025-2026). Me gusta crear. Hoy en día hago joyas y
+    pequeños objetos, inspirados en el entorno de la ciudad o reflexionando
+    sobre los materiales que nos rodean en lo cotidiano.
+  </p>
+
+  <p>
+    Además de mi trabajo de estudio, dirijo una marca de joyería llamada
+    Minilith (<a href="http://minilith.co.uk" class="underline!">minilith.co.uk</a
+    >), que hace joyas de plata inspiradas en la arquitectura modernista.
+    Minilith forma parte de Makerversity, una comunidad de diseñadores,
+    artesanos e inventores.
+  </p>
+
+  <p>
+    Trabajo desde <a
+      href="https://www.somersethouse.org.uk/"
+      class="underline!">Somerset House</a
+    >, el histórico centro de artes del centro de Londres, o desde Baseform
+    (베이스폼), en el distrito de Mapo de Seúl.<br />Puedes escribirme a <span>
       juan<span
         class="inline-block relative before:content-['@'] before:absolute"
-        ><span class="inline-block overflow-clip opacity-0 text-[0.7em]"
+        ><span class="inline-block overflow-clip opacity-0 text-[0.65em]"
           >[at]</span
-        >castrovaron.com
-      </span>
-    </span>
-
-    <p>
-      In addition to my studio work, I run a jewellery brand called Minilith (<a
-        href="http://minilith.co.uk"
-        class="underline!">minilith.co.uk</a
-      >), making silver jewellery inspired by the built environment. I'm based
-      in Somerset House, central London's historic arts center. Minilith is part
-      of Makerversity, a community of designers, craftspeople and inventors.
-    </p>
-    <p>
-      In a previous career, I worked as a software engineer at Google between
-      2017 and 2023. You can find my old archived website here (beware, it's
-      quite outdated).
-    </p>
-
-    <hr />
-
-    <p>
-      <ul>
-        <li>Born 1997</li>
-        <li>Colombia</li>
-      </ul>
-    </p>
-    <p>
-      <h4 class="tgbe-font text-[1rem]!">Education & Residencies:</h4>
-      <ul>
-        <li>
-          <span class="w-[5.5em] inline-block">2023-2025</span> Under-30 Resident
-          @ Somerset House, London
-        </li>
-        <li>
-          <span class="w-[5.5em] inline-block">2024-2025</span> K2 Academy of Contemporary
-          Jewellery, London
-        </li>
-      </ul>
-    </p>
-    <p>
-      <h4 class="tgbe-font text-[1rem]!">Awards:</h4>
-      <ul>
-        <li>
-          <span class="w-[5.5em] inline-block">2024</span> Goldsmith's Craft & Design
-          Awards - Gold Award
-        </li>
-      </ul>
-    </p>
-    <p>
-      <h4 class="tgbe-font text-[1rem]!">Group Exhibitions:</h4>
-      <ul>
-        <li>
-          <span class="w-[5.5em] inline-block">2024</span> Sheffield, Goldsmiths
-          North 12 - 14 July @ Sheffield's Cutler Hall
-        </li>
-        <li>
-          <span class="w-[5.5em] inline-block">2024</span> London Goldsmith's Centre
-          12 - 14 July
-        </li>
-        <li>
-          <span class="w-[5.5em] inline-block">2024</span> Birmingham Assay Office
-          12 - 14
-        </li>
-
-        <li>
-          <span class="w-[5.5em] inline-block">2024</span> London Goldsmith's Hall
-          March
-        </li>
-      </ul>
-    </p>
+        >castrovaron.com</span
+      ></span
+    >
   </p>
-  <div class="h-40"></div>
+
+  <hr class="my-8" />
+
+  <CV born={["Nacido en 1997", "Colombia"]} sections={cv} />
+
+  <hr class="my-10" />
+  <p>
+    * En una carrera anterior, estudié computación y trabajé como ingeniero de
+    software en Google de 2017 a 2023. En 2023 decidí pasar más tiempo haciendo
+    cosas y menos tiempo mirando una pantalla. Puedes ver mi antigua web
+    archivada <a href="https://castrovaron.pages.dev" class="underline!">aquí</a>
+    (ojo, está bastante desactualizada).
+  </p>
 </Layout>

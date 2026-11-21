@@ -1,0 +1,43 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_TITLE } from "../consts";
+import { localeFromPath, ui } from "../i18n";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  wide?: boolean; // home gallery and Work page use more of the screen
+}
+
+// The language comes from the URL: /es/... is Spanish, /kr/... is Korean.
+const { code, htmlLang } = localeFromPath(Astro.url.pathname);
+const {
+  title,
+  description = ui[code].description,
+  image,
+  wide = false,
+} = Astro.props;
+const fullTitle = title ? `${title} — ${SITE_TITLE}` : SITE_TITLE;
+---
+
+<!doctype html>
+<html lang={htmlLang}>
+  <head>
+    <BaseHead title={fullTitle} description={description} image={image} />
+  </head>
+  <body class="plantin-font">
+    <Header />
+    <main
+      class:list={[
+        "px-4 pt-4 pb-16 md:pb-32 md:ml-[21rem] md:pt-24",
+        wide ? "md:pr-8 max-w-[1400px]" : "max-w-[760px]",
+      ]}
+    >
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

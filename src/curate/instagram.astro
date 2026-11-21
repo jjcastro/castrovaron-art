@@ -1,0 +1,238 @@
+---
+// Local-only Instagram grid planner. Injected by the `instagramPlanner`
+// integration in astro.config.mjs when running `astro dev`; never built.
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { getImage } from "astro:assets";
+import { orderedPhotos } from "../data/home";
+
+// The plan lives in ./instagram/plan.json (git-ignored).
+let plan = { queue: [] as string[], existing: [] as string[] };
+try {
+  plan = JSON.parse(await readFile(join(process.cwd(), "instagram", "plan.json"), "utf8"));
+} catch {}
+
+// Every site photo, in home-grid order (hidden ones last).
+const ordered = orderedPhotos();
+const photos = await Promise.all(
+  [...ordered.filter((p) => !p.hidden), ...ordered.filter((p) => p.hidden)].map(async (p) => ({
+    id: p.id,
+    label: p.label,
+    onHome: !p.hidden,
+    src: (await getImage({ src: p.image, width: 540 })).src,
+  })),
+);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Instagram planner</title>
+    <!-- Global: the lists and grid are built in the browser, so scoped styles wouldn't reach them -->
+    <style is:global>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 14px/1.4 system-ui, sans-serif; background: #f4f4f2; color: #111; }
+      header { position: sticky; top: 0; z-index: 5; background: #fff; border-bottom: 1px solid #ddd;
+        padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+      header p { margin: 0; color: #555; flex: 1 1 360px; }
+      button { font: inherit; padding: 6px 12px; border: 1px solid #111; background: #fff; color: #111; cursor: pointer; }
+      button.primary { background: #111; color: #fff; }
+      #status { min-width: 8em; }
+      .layout { display: grid; grid-template-columns: 400px 1fr; gap: 24px; padding: 16px; align-items: start; }
+      @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+      h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 8px; }
+      .hint { color: #666; margin: -4px 0 10px; font-size: 12px; }
+      section { background: #fff; border: 1px solid #ddd; padding: 12px; margin-bottom: 16px; }
+
+      /* Phone mock */
+      .phone { position: sticky; top: 64px; width: 390px; max-width: 100%; margin: 0 auto; background: #fff;
+        border: 1px solid #ccc; border-radius: 28px; padding: 14px 0 0; overflow: hidden; }
+      .profile { padding: 0 14px 10px; display: flex; gap: 12px; align-items: center; }
+      .avatar { width: 64px; height: 64px; border-radius: 50%; background: #ddd; flex: none; }
+      .handle { font-weight: 600; }
+      .tabs { border-top: 1px solid #eee; text-align: center; padding: 6px; font-size: 12px; color: #555; }
+      .igrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; max-height: 70vh; overflow-y: auto; }
+      .igrid .tile { position: relative; aspect-ratio: var(--ratio, 3 / 4); background: #eee; overflow: hidden; }
+      .igrid img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .igrid .tile.new::after { content: attr(data-n); position: absolute; top: 4px; left: 4px; background: #111; color: #fff;
+        font-size: 11px; padding: 0 5px; }
+      .igrid .divider { grid-column: 1 / -1; font-size: 11px; color: #888; padding: 4px 8px; background: #fafafa; }
+
+      /* Lists */
+      .strip { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px;
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); min-height: 60px; }
+      .strip li { position: relative; background: #fafafa; border: 1px solid #ddd; padding: 4px; cursor: grab; }
+      .strip img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; pointer-events: none; }
+      .strip .num { position: absolute; top: 6px; left: 6px; background: #111; color: #fff; font-size: 11px; padding: 0 5px; }
+      .strip .x { position: absolute; top: 4px; right: 4px; padding: 0 6px; font-size: 12px; }
+      .strip .cap { font-size: 11px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      #pool li { cursor: pointer; }
+      #pool li.used { opacity: .35; }
+      #pool li.off-home .cap::after { content: " · hidden on site"; color: #b33; }
+      #drop { border: 2px dashed #bbb; padding: 14px; text-align: center; color: #666; margin-bottom: 10px; }
+      #drop.over { border-color: #111; color: #111; background: #f7f7f7; }
+      .ghost { opacity: .4; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <strong>Instagram planner</strong>
+      <p>Your profile as it will look once the queued posts are up (newest top-left). Saved to
+        <code>instagram/plan.json</code>, local only.</p>
+      <label>Grid crop
+        <select id="ratio">
+          <option value="3 / 4">3:4 (current)</option>
+          <option value="1 / 1">1:1 (old square)</option>
+        </select>
+      </label>
+      <button id="save" class="primary">Save</button>
+      <span id="status"></span>
+    </header>
+
+    <div class="layout">
+      <div class="phone">
+        <div class="profile">
+          <div class="avatar"></div>
+          <div><div class="handle">jcastrovaron</div><div id="counts" class="hint" style="margin:0"></div></div>
+        </div>
+        <div class="tabs">▦ Posts</div>
+        <div class="igrid" id="igrid"></div>
+      </div>
+
+      <div>
+        <section>
+          <h2>1 · Posting order</h2>
+          <p class="hint">#1 is the first you post (it ends up lowest of the new ones). Drag to reorder; × removes.</p>
+          <ul class="strip" id="queue"></ul>
+        </section>
+
+        <section>
+          <h2>2 · Your existing posts</h2>
+          <p class="hint">Add images of your current posts, newest first (screenshots work). JPG, PNG or WebP.</p>
+          <div id="drop">Drop images here or <input type="file" id="file" accept="image/jpeg,image/png,image/webp" multiple /></div>
+          <ul class="strip" id="existing"></ul>
+        </section>
+
+        <section>
+          <h2>3 · Site photos</h2>
+          <p class="hint">Click to add to the end of the posting order; click again to remove. Same order as the home page.</p>
+          <ul class="strip" id="pool"></ul>
+        </section>
+      </div>
+    </div>
+
+    <script is:inline src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <script is:inline define:vars={{ photos, plan }}>
+      const byId = new Map(photos.map((p) => [p.id, p]));
+      const state = {
+        queue: plan.queue.filter((id) => byId.has(id)),
+        existing: [...plan.existing],
+      };
+      const $ = (id) => document.getElementById(id);
+      const status = $("status");
+      let dirty = false;
+      const existingSrc = (name) => "/__instagram/existing/" + encodeURIComponent(name);
+
+      function changed() { dirty = true; status.textContent = "Unsaved changes"; status.style.color = "#b36b00"; render(); }
+
+      function li(src, caption, extra = {}) {
+        const el = document.createElement("li");
+        el.innerHTML = `<img src="${src}" alt="" loading="lazy" /><div class="cap"></div>`;
+        el.querySelector(".cap").textContent = caption;
+        if (extra.num) el.insertAdjacentHTML("afterbegin", `<span class="num">${extra.num}</span>`);
+        if (extra.remove) {
+          const x = document.createElement("button"); x.className = "x"; x.type = "button"; x.textContent = "×";
+          x.onclick = (e) => { e.stopPropagation(); extra.remove(); };
+          el.append(x);
+        }
+        if (extra.key) el.dataset.key = extra.key;
+        return el;
+      }
+
+      function render() {
+        // Queue (posting order)
+        const q = $("queue"); q.replaceChildren();
+        state.queue.forEach((id, i) => q.append(li(byId.get(id).src, byId.get(id).label, {
+          num: i + 1, key: id, remove: () => { state.queue.splice(i, 1); changed(); },
+        })));
+        // Existing posts
+        const ex = $("existing"); ex.replaceChildren();
+        state.existing.forEach((name, i) => ex.append(li(existingSrc(name), i === 0 ? "newest" : "", {
+          key: name, remove: () => { state.existing.splice(i, 1); changed(); },
+        })));
+        // Pool
+        const pool = $("pool"); pool.replaceChildren();
+        photos.forEach((p) => {
+          const n = state.queue.indexOf(p.id);
+          const el = li(p.src, p.label, n >= 0 ? { num: n + 1 } : {});
+          if (n >= 0) el.classList.add("used");
+          if (!p.onHome) el.classList.add("off-home");
+          el.onclick = () => {
+            const k = state.queue.indexOf(p.id);
+            if (k >= 0) state.queue.splice(k, 1); else state.queue.push(p.id);
+            changed();
+          };
+          pool.append(el);
+        });
+        // Phone grid: newest first = last queued post at top-left, then existing posts
+        const g = $("igrid"); g.replaceChildren();
+        [...state.queue].reverse().forEach((id) => {
+          const t = document.createElement("div"); t.className = "tile new";
+          t.dataset.n = state.queue.indexOf(id) + 1;
+          t.innerHTML = `<img src="${byId.get(id).src}" alt="" />`;
+          g.append(t);
+        });
+        state.existing.forEach((name) => {
+          const t = document.createElement("div"); t.className = "tile";
+          t.innerHTML = `<img src="${existingSrc(name)}" alt="" />`;
+          g.append(t);
+        });
+        // New posts push existing ones along; a multiple of 3 keeps your current rows intact.
+        const shift = state.queue.length % 3;
+        if (shift && state.existing.length) {
+          const note = document.createElement("div"); note.className = "divider";
+          note.textContent = `${state.queue.length} new posts: your existing rows shift by ${shift}. Post a multiple of 3 to keep them as they are.`;
+          g.append(note);
+        }
+        $("counts").textContent = `${state.queue.length} new · ${state.existing.length} existing`;
+      }
+
+      new Sortable($("queue"), { animation: 150, ghostClass: "ghost", onEnd: () => {
+        state.queue = [...$("queue").children].map((el) => el.dataset.key); changed();
+      } });
+      new Sortable($("existing"), { animation: 150, ghostClass: "ghost", onEnd: () => {
+        state.existing = [...$("existing").children].map((el) => el.dataset.key); changed();
+      } });
+
+      async function upload(files) {
+        for (const f of files) {
+          status.textContent = "Uploading " + f.name + "…"; status.style.color = "#555";
+          const res = await fetch("/__instagram/upload", { method: "POST", headers: { "x-filename": encodeURIComponent(f.name) }, body: f });
+          const text = await res.text();
+          if (!res.ok) { status.textContent = f.name + ": " + text; status.style.color = "#b33"; return; }
+          state.existing.push(text);
+        }
+        changed();
+      }
+      const drop = $("drop");
+      drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
+      drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+      drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); upload([...e.dataTransfer.files]); });
+      $("file").addEventListener("change", (e) => { upload([...e.target.files]); e.target.value = ""; });
+
+      $("ratio").onchange = (e) => $("igrid").style.setProperty("--ratio", e.target.value);
+
+      $("save").onclick = async () => {
+        status.textContent = "Saving…";
+        const res = await fetch("/__instagram/save", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(state) });
+        if (res.ok) { dirty = false; status.textContent = "Saved ✓"; status.style.color = "#2a7a2a"; }
+        else { status.textContent = "Save failed: " + (await res.text()); status.style.color = "#b33"; }
+      };
+      window.addEventListener("beforeunload", (e) => { if (dirty) e.preventDefault(); });
+      render();
+    </script>
+  </body>
+</html>

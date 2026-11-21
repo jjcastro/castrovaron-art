@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Instagram planner: your plan and existing-post images (local only)
+instagram/

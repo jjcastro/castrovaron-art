@@ -1,0 +1,28 @@
+---
+// ENG / ESP / 한국어 links. Desktop footer: all three, current one underlined.
+// Mobile top bar (`others`): only the languages you're not in, to keep it light.
+import { languages, localeFromPath, pathInLanguage } from "../i18n";
+
+interface Props {
+  class?: string;
+  others?: boolean;
+}
+
+const { class: className, others = false } = Astro.props;
+const { code } = localeFromPath(Astro.url.pathname);
+const shown = others ? languages.filter((l) => l.code !== code) : languages;
+---
+
+<div class:list={["flex items-baseline gap-4 tgbe-font whitespace-nowrap", className]}>
+  {
+    shown.map((l) => (
+      <a
+        href={pathInLanguage(Astro.url.pathname, l.prefix)}
+        lang={l.code === "kr" ? "ko" : l.code}
+        class:list={{ underline: !others && l.code === code, "text-[0.85em]": l.code === "kr" }}
+      >
+        {l.label}
+      </a>
+    ))
+  }
+</div>

@@ -1,0 +1,41 @@
+---
+import { Image } from "astro:assets";
+import { homePhotos, masonry } from "../data/home";
+import { localeFromPath } from "../i18n";
+
+const photos = homePhotos(localeFromPath(Astro.url.pathname).code);
+// Two layouts are rendered; CSS shows one. Hidden lazy images never download.
+const layouts = [
+  { columns: 2, class: "flex md:hidden" },
+  { columns: 3, class: "hidden md:flex" },
+];
+---
+
+{
+  layouts.map((layout) => (
+    <div class:list={["gap-2 md:gap-3 items-start", layout.class]}>
+      {masonry(photos, layout.columns).map((column) => (
+        <div class="flex-1 min-w-0 flex flex-col gap-2 md:gap-3">
+          {column.map((p) => {
+            const img = (
+              <Image
+                src={p.image}
+                alt={p.alt}
+                widths={[300, 450, 600, 900]}
+                sizes="(min-width: 768px) 30vw, 50vw"
+                class="block w-full h-auto"
+              />
+            );
+            return p.href ? (
+              <a href={p.href} title={p.label} class="block hover:opacity-85 transition-opacity">
+                {img}
+              </a>
+            ) : (
+              img
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  ))
+}
